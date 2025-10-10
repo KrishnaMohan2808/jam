@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Roomjoinpage from './Roomjoinpage';
+import Createroompage from './Createroompage';
 
 export default class Homepage extends Component {
   constructor(props) {
