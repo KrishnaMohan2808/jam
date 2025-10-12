@@ -59,9 +59,13 @@ export default class CreateRoomPage extends Component {
         container
         spacing={2}
         direction="column"
-        justifyContent="flex-start"
+        justifyContent="center"
         alignItems="center"
-        sx={{ minHeight: "100vh", pt: 5 }} // top padding, full viewport height
+        sx={{ 
+          minHeight: "100vh",
+          width: "100%",
+          flex: 1
+        }}
       >
         <Grid item xs={12} align="center">
           <Typography component="h4" variant="h4">
