@@ -9,6 +9,29 @@ export default class Room extends Component {
             isHost: false,
         };
         this.roomCode = this.props.match.params.roomCode;
+        this.getRoomDetails = this.getRoomDetails.bind(this);
+    }
+
+    getRoomDetails() {
+        fetch('/api/get-room' + '?code=' + this.roomCode)
+            .then((response) => {
+                if (!response.ok) {
+                    this.props.leaveRoomCallback();
+                    this.props.navigate('/');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                this.setState({
+                    votesToSkip: data.votes_to_skip,
+                    guestCanPause: data.guest_can_pause,
+                    isHost: data.is_host,
+                });
+            });
+    }
+
+    componentDidMount() {
+        this.getRoomDetails();
     }
     
     render() {
