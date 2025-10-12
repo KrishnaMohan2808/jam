@@ -8,6 +8,7 @@ import {
   Route,
   Link,
 } from "react-router-dom";
+import RoomWrapper from './Room';
 
 
 export default class Homepage extends Component {
@@ -18,7 +19,7 @@ export default class Homepage extends Component {
           <Route path="/" element={<p>This is Home page.</p>} />
           <Route path="/join" element={<Roomjoinpage />} />
           <Route path="/create" element={<Createroompage />} />
-          <Route path = "/room/:roomCode" element={<Room />} /> 
+          <Route path = "/room/:roomCode" element={<RoomWrapper />} /> 
         </Routes>
       </Router>
     );
