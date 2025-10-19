@@ -52,7 +52,20 @@ class CreateRoomView(APIView):
                 self.request.session['room_code'] = room_instance.code
                 return Response(RoomSerializer(room_instance).data, status=status.HTTP_201_CREATED)
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # ... (all your other imports)
+from django.shortcuts import render  # This should already be at the top
 
+# ... (all your class-based views like RoomView, GetRoom, CreateRoomView)
+
+
+# ADD THIS FUNCTION AT THE BOTTOM OF THE FILE
+def index(request, *args, **kwargs):
+    """
+    This view renders the main 'index.html' file,
+    which contains your entire React application.
+    """
+    return render(request, 'frontend/index.html')
 
 
 
