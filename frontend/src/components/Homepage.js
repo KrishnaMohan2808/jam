@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import Roomjoinpage from './Roomjoinpage';
-import Createroompage from './Createroompage';
-import Room from './Room';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Link,
 } from "react-router-dom";
-import RoomWrapper from './Room';
+
+// Import the WRAPPERS
+import RoomjoinpageWrapper from './RoomjoinpageWrapper';
+import CreateroompageWrapper from './CreateroompageWrapper';
+import RoomWrapper from './Room'; // <-- THIS IS THE CORRECTED LINE
 
 
 export default class Homepage extends Component {
@@ -17,9 +18,12 @@ export default class Homepage extends Component {
       <Router>
         <Routes>
           <Route path="/" element={<p>This is Home page.</p>} />
-          <Route path="/join" element={<Roomjoinpage />} />
-          <Route path="/create" element={<Createroompage />} />
+
+          {/* Use the WRAPPERS in the element prop */}
+          <Route path="/join" element={<RoomjoinpageWrapper />} />
+          <Route path="/create" element={<CreateroompageWrapper />} />
           <Route path = "/room/:roomCode" element={<RoomWrapper />} /> 
+          
         </Routes>
       </Router>
     );

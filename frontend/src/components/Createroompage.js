@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Grid,
@@ -8,11 +9,10 @@ import {
   FormControl,
   Radio,
   RadioGroup,
-  FormControlLabel,
-} from "@mui/material";
-import { Link } from "react-router-dom";
+  FormControlLabel
+} from '@mui/material';
 
-export default class CreateRoomPage extends Component {
+export default class Createroompage extends Component {
   defaultVotes = 2;
 
   constructor(props) {
@@ -35,7 +35,7 @@ export default class CreateRoomPage extends Component {
 
   handleGuestCanPauseChange(e) {
     this.setState({
-      guestCanPause: e.target.value === "true" ? true : false,
+      guestCanPause: e.target.value === "true",
     });
   }
 
@@ -48,34 +48,27 @@ export default class CreateRoomPage extends Component {
         guest_can_pause: this.state.guestCanPause,
       }),
     };
-    fetch("/api/create-room", requestOptions)
+
+    fetch("/api/create-room/", requestOptions)
       .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        // Use the navigate prop from the wrapper
+        this.props.navigate("/room/" + data.code);
+      });
   }
 
   render() {
     return (
-      <Grid
-        container
-        spacing={2}
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        sx={{ 
-          minHeight: "100vh",
-          width: "100%",
-          flex: 1
-        }}
-      >
-        <Grid item xs={12} align="center">
+      <Grid container spacing={1} align="center">
+        <Grid item xs={12}>
           <Typography component="h4" variant="h4">
             Create A Room
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
+        <Grid item xs={12}>
           <FormControl component="fieldset">
             <FormHelperText>
-              <div align="center">Guest Control of Playback State</div>
+              Guest Control of Playback State
             </FormHelperText>
             <RadioGroup
               row
@@ -97,10 +90,10 @@ export default class CreateRoomPage extends Component {
             </RadioGroup>
           </FormControl>
         </Grid>
-        <Grid item xs={12} align="center">
+        <Grid item xs={12}>
           <FormControl>
             <TextField
-              required
+              required={true}
               type="number"
               onChange={this.handleVotesChange}
               defaultValue={this.defaultVotes}
@@ -110,11 +103,11 @@ export default class CreateRoomPage extends Component {
               }}
             />
             <FormHelperText>
-              <div align="center">Votes Required To Skip Song</div>
+              Votes Required To Skip Song
             </FormHelperText>
           </FormControl>
-        </Grid>
-        <Grid item xs={12} align="center">
+        </Grid> {/* Fixed </sGrid> typo here */}
+        <Grid item xs={12}>
           <Button
             color="primary"
             variant="contained"
@@ -123,7 +116,7 @@ export default class CreateRoomPage extends Component {
             Create A Room
           </Button>
         </Grid>
-        <Grid item xs={12} align="center">
+        <Grid item xs={12}>
           <Button color="secondary" variant="contained" to="/" component={Link}>
             Back
           </Button>
