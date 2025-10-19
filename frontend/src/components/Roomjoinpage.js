@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 // Imports from your first image (assuming @mui/material)
-import { Grid, Typography, TextField } from '@mui/material'; 
-
-// Import from your second image (material-ui/core is older, @mui/material is newer)
-// import { TextField, Button, Grid, Typography } from "@material-ui/core";
-// import { Link } from "react-router-dom";
+import { Grid, Typography, TextField, Button } from '@mui/material'; 
+// Import from your second image
+import { Link } from "react-router-dom";
 
 
 export default class Roomjoinpage extends Component {
@@ -15,6 +13,27 @@ export default class Roomjoinpage extends Component {
       error: "",
       roomCode: "", // Added this because it's used in value={this.state.roomCode}
     };
+
+    // Bind the handler methods to 'this'
+    this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
+    this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this);
+  }
+
+  // Updates state as the user types
+  handleTextFieldChange(e) {
+    this.setState({
+      roomCode: e.target.value,
+    });
+  }
+
+  // Placeholder function for when the "Enter Room" button is clicked
+  // You will replace this with your API call logic
+  handleRoomButtonPressed() {
+    console.log("Room code entered:", this.state.roomCode);
+    // Example:
+    // const requestOptions = { ... };
+    // fetch("/api/join-room", requestOptions)
+    //   .then((response) => ...)
   }
 
   render() {
@@ -43,13 +62,31 @@ export default class Roomjoinpage extends Component {
             helperText={this.state.error}
             variant="outlined"
             
-            // NOTE: You will still need an onChange handler here
-            // to make the text field editable, like:
-            // onChange={this.handleTextFieldChange}
+            // Added the onChange handler to make the field editable
+            onChange={this.handleTextFieldChange}
           />
         </Grid>
         
-        {/* The rest of your component (buttons) would go here */}
+        {/* Corrected Button section */}
+        <Grid item xs={12}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={this.handleRoomButtonPressed}
+          >
+            Enter Room
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            to="/" 
+            component={Link}
+          >
+            Back
+          </Button>
+        </Grid>
 
       </Grid>
     );
