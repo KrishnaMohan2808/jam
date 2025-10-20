@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Link,
+  Navigate // 1. Import Navigate
 } from "react-router-dom";
 // Corrected: Imports must be capitalized
 import { Typography, Button, Grid } from '@mui/material';
@@ -15,6 +16,23 @@ import RoomWrapper from './Room'; // <-- THIS IS THE CORRECTED LINE
 
 
 export default class Homepage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      roomCode: null,
+    };
+  }
+
+  // Removed 'async' since we are using .then()
+  componentDidMount() {
+    fetch('/api/user-in-room/') // Make sure this URL has a trailing slash if Django needs it!
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({
+          roomCode: data.code,
+        });
+      });
+  }
   
   // This function must return valid JSX
   renderHomepage() { 
@@ -61,8 +79,20 @@ export default class Homepage extends Component {
     return (
       <Router>
         <Routes>
-          {/* Corrected: Route syntax was broken */}
-          <Route path="/" element={this.renderHomepage()} />
+          {/* 2. THIS IS THE CORRECTED ROUTE:
+            It now renders the <Navigate> component if roomCode exists,
+            or the homepage element if it doesn't.
+          */}
+          <Route 
+            path="/" 
+            element={
+              this.state.roomCode ? (
+                <Navigate replace to={`/room/${this.state.roomCode}`} />
+              ) : (
+                this.renderHomepage()
+              )
+            } 
+          />
 
           {/* Use the WRAPPERS in the element prop */}
           <Route path="/join" element={<RoomjoinpageWrapper />} />

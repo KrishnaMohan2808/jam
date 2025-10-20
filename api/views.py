@@ -84,5 +84,16 @@ def index(request, *args, **kwargs):
     return render(request, 'frontend/index.html')
 
 
+class userInRoom(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+        
+        data = {
+            'code': self.request.session.get('room_code')
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+
 
 
