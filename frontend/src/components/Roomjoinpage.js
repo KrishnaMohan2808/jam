@@ -45,12 +45,12 @@ export default class Roomjoinpage extends Component {
   render() {
     return (
       <Grid container spacing={1} align="center">
-        <Grid item xs={12}>
+        <Grid item xs={12} align="center">
           <Typography variant="h4" component="h4">
             Join a Room
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} align="center">
           <TextField
             error={this.state.error.length > 0} 
             label="Code"
@@ -61,7 +61,7 @@ export default class Roomjoinpage extends Component {
             onChange={this.handleTextFieldChange}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} align="center">
           <Button
             variant="contained"
             color="primary"
@@ -70,7 +70,7 @@ export default class Roomjoinpage extends Component {
             Enter Room
           </Button>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} align="center">
           <Button
             variant="contained"
             color="secondary"

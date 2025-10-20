@@ -21,6 +21,7 @@ export default class Homepage extends Component {
     this.state = {
       roomCode: null,
     };
+    this.clearroomCode = this.clearroomCode.bind(this);
   }
 
   // Removed 'async' since we are using .then()
@@ -74,6 +75,11 @@ export default class Homepage extends Component {
       </Grid>
     );        
   }
+  clearroomCode() {
+    this.setState({
+      roomCode: null,
+    });
+  } 
 
   render() {
     return (
@@ -97,7 +103,7 @@ export default class Homepage extends Component {
           {/* Use the WRAPPERS in the element prop */}
           <Route path="/join" element={<RoomjoinpageWrapper />} />
           <Route path="/create" element={<CreateroompageWrapper />} />
-          <Route path="/room/:roomCode" element={<RoomWrapper />} /> 
+          <Route path="/room/:roomCode" element={<RoomWrapper clearRoomCallback={this.clearroomCode} />} /> 
           
         </Routes>
       </Router>
