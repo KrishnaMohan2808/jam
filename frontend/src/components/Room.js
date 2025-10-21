@@ -50,6 +50,12 @@ class Room extends Component {
     });
   }
 
+  showSettingsButtonPressed = () => {
+    this.setState({
+      showSettings: !this.state.showSettings,
+    });
+  };
+
   render() {
     return (
       <Grid container spacing={1} align="center" style={{ marginTop: '2rem' }}>
