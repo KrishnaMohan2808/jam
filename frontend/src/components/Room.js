@@ -16,6 +16,7 @@ class Room extends Component {
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.getRoomDetails();
+    this.showSettingsButtonPressed = this.showSettingsButtonPressed.bind(this);
   }
 
   getRoomDetails() {
@@ -56,6 +57,28 @@ class Room extends Component {
     });
   };
 
+  renderSettings() {
+    return (
+      <Grid container spacing={1} align="center">
+        <Grid item xs={12}>
+          <Typography variant="h6" component="h6">
+            Settings
+          </Typography>
+        </Grid>
+        {/* Settings form would go here */}
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.showSettingsButtonPressed}
+          >
+            Close
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  }
+
   render() {
     return (
       <Grid container spacing={1} align="center" style={{ marginTop: '2rem' }}>
@@ -79,6 +102,18 @@ class Room extends Component {
             Host: {this.state.isHost.toString()}
           </Typography>
         </Grid>
+        {this.state.isHost ? (
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.showSettingsButtonPressed}
+            >
+              Settings
+            </Button>
+          </Grid>
+        ) : null}
+        {this.state.showSettings ? this.renderSettings() : null}  
         <Grid item xs={12} style={{ marginTop: '1rem' }}>
           <Button
             variant="contained"
