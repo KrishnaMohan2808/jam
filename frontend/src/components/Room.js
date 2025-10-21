@@ -10,6 +10,7 @@ class Room extends Component {
       votesToSkip: 2,
       guestCanPause: false,
       isHost: false,
+      showSettings: false,
     };
     this.roomCode = props.roomCode;
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
