@@ -2,6 +2,7 @@ import React, { Component } from "react";
 // Import useNavigate and Link
 import { useParams, useNavigate, Link } from "react-router-dom"; 
 import { Typography, Grid, Button } from "@mui/material";
+import CreateRoomPage from "./createRoomPage";
 
 class Room extends Component {
   constructor(props) {
@@ -56,20 +57,22 @@ class Room extends Component {
       showSettings: !this.state.showSettings,
     });
   };
-
   renderSettings() {
     return (
-      <Grid container spacing={1} align="center">
-        <Grid item xs={12}>
-          <Typography variant="h6" component="h6">
-            Settings
-          </Typography>
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <CreateRoomPage
+            update={true}
+            votesToSkip={this.state.votesToSkip}
+            guestCanPause={this.state.guestCanPause}
+            roomCode={this.roomCode}
+            updateCallback={this.getRoomDetails}
+          />
         </Grid>
-        {/* Settings form would go here */}
-        <Grid item xs={12}>
+        <Grid item xs={12} align="center">
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             onClick={this.showSettingsButtonPressed}
           >
             Close
@@ -79,42 +82,48 @@ class Room extends Component {
     );
   }
 
-  render() {
+  renderSettingsButton() {
     return (
-      <Grid container spacing={1} align="center" style={{ marginTop: '2rem' }}>
-        <Grid item xs={12}>
+      <Grid item xs={12} align="center">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.showSettingsButtonPressed}
+        >
+          Settings
+        </Button>
+      </Grid>
+    );
+  }
+
+  render() {
+    if (this.state.showSettings) {
+      return this.renderSettings();
+    }
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
           <Typography variant="h4" component="h4">
             Code: {this.roomCode}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6">
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
             Votes to Skip: {this.state.votesToSkip}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6">
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
             Guest Can Pause: {this.state.guestCanPause.toString()}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6">
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
             Host: {this.state.isHost.toString()}
           </Typography>
         </Grid>
-        {this.state.isHost ? (
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.showSettingsButtonPressed}
-            >
-              Settings
-            </Button>
-          </Grid>
-        ) : null}
-        {this.state.showSettings ? this.renderSettings() : null}  
-        <Grid item xs={12} style={{ marginTop: '1rem' }}>
+        {this.state.isHost ? this.renderSettingsButton() : null}
+        <Grid item xs={12} align="center">
           <Button
             variant="contained"
             color="secondary"
@@ -127,7 +136,6 @@ class Room extends Component {
     );
   }
 }
-
 // Wrapper to inject props into the class component
 export default function RoomWrapper(props) { // Accept all props
   const { roomCode } = useParams();
