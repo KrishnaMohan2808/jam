@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 // Import useNavigate to pass it down
 import { Link, useNavigate } from 'react-router-dom';
 import {
-Button,
+  Button,
   Grid,
   Typography,
   TextField,
@@ -14,7 +14,6 @@ Button,
 } from '@mui/material';
 
 class Createroompage extends Component {
-  // 1. FIXED: 'defaultprops' -> 'defaultProps' and 'update = false' -> 'update: false'
   static defaultProps = {
     votesToSkip: 2,
     guestCanPause: true,
@@ -47,9 +46,8 @@ class Createroompage extends Component {
     });
   }
 
-  // 2. FIXED: Added 'update' logic
   handleRoomButtonPressed() {
-// If this.props.update is true, call the update API
+    // If this.props.update is true, call the update API
     if (this.props.update) {
       const requestOptions = {
         method: "PATCH", // Use PATCH for updates as in your views.py
@@ -63,16 +61,16 @@ class Createroompage extends Component {
 
       fetch("/api/update-room/", requestOptions)
         .then((response) => {
-      if (response.ok) {
-        // Call the callback to close the settings window
-        this.props.updateCallback(); 
-      } else {
-        console.error("Failed to update room");
-      }
-    });
+          if (response.ok) {
+            // Call the callback to close the settings window
+            this.props.updateCallback(); 
+          } else {
+            console.error("Failed to update room");
+          }
+        });
     } 
-// Otherwise, call the create API
-else {
+    // Otherwise, call the create API
+    else {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -108,8 +106,7 @@ else {
             </FormHelperText>
             <RadioGroup
               row
-              // 3. FIXED: 'defaultValue' -> 'value'
-          // Convert boolean state to string for the RadioGroup
+              // Use 'value' to make this a controlled component
               value={this.state.guestCanPause.toString()} 
               onChange={this.handleGuestCanPauseChange}
             >
@@ -122,7 +119,7 @@ else {
               <FormControlLabel
                 value="false"
                 control={<Radio color="secondary" />}
-                label="No Control"
+  _B_               label="No Control"
                 labelPlacement="bottom"
               />
             </RadioGroup>
@@ -134,7 +131,7 @@ else {
               required={true}
               type="number"
               onChange={this.handleVotesChange}
-              // 3. FIXED: 'defaultValue' -> 'value'
+              // Use 'value' to make this a controlled component
               value={this.state.votesToSkip} 
               inputProps={{
                 min: 1,
@@ -142,7 +139,7 @@ else {
               }}
             />
             <FormHelperText>
-              Votes Required To Skip Song
+E_B_              Votes Required To Skip Song
             </FormHelperText>
           </FormControl>
         </Grid>
@@ -151,8 +148,8 @@ else {
             color="primary"
             variant="contained"
             onClick={this.handleRoomButtonPressed}
-s          >
-        {/* 4. FIXED: Button text is now dynamic */}
+            // Typo 's' removed from here
+          >
             {this.props.update ? "Update Room" : "Create A Room"}
           </Button>
         </Grid>
@@ -161,15 +158,16 @@ s          >
             Back
           </Button>
         </Grid>
+        {/* The duplicate button call has been removed from here */}
       </Grid>
     );
   }
 }
 
-// 5. ADDED: Wrapper component to inject 'navigate' prop
+// Wrapper component is still needed to inject 'navigate' prop
 export default function CreateRoomPageWrapper(props) {
-const navigate = useNavigate();
-return (
-<Createroompage {...props} navigate={navigate} />
-);
+  const navigate = useNavigate();
+  return (
+    <Createroompage {...props} navigate={navigate} />
+  );
 }
