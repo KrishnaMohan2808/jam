@@ -63,4 +63,4 @@ def spotify_callback(request):
         refresh_token=refresh_token
     )
     # Redirect to your frontend after successful authentication
-    return redirect('frontend-url')  # Replace 'frontend-url' with your actual frontend URL
+    return redirect('frontend:')  # Adjust the redirect URL as needed
