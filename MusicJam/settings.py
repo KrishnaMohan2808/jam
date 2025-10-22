@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_extensions',
     'frontend.apps.FrontendConfig',
+    'spotify.apps.SpotifyConfig',
 
    
 ]
