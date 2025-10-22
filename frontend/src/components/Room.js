@@ -12,12 +12,17 @@ class Room extends Component {
       guestCanPause: false,
       isHost: false,
       showSettings: false,
+      spotifyAuthenticated: false,
     };
     this.roomCode = props.roomCode;
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
     this.getRoomDetails();
     this.showSettingsButtonPressed = this.showSettingsButtonPressed.bind(this);
+    this.authenticateSpotify = this.authenticateSpotify.bind(this);
+    this.renderSettings = this.renderSettings.bind(this);
+    this.renderSettingsButton = this.renderSettingsButton.bind(this);
+    
   }
 
   getRoomDetails() {
@@ -35,7 +40,27 @@ class Room extends Component {
           votesToSkip: data.votes_to_skip,
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
+
         });
+        if (data.is_host) {
+          this.authenticateSpotify();
+        }
+      });
+  }
+
+ authenticateSpotify() {
+    fetch("/spotify/is-authenticated/")
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ spotifyAuthenticated: data.status });
+        if (!data.status) {
+          fetch("/spotify/get-auth-url/")
+            .then((response) => response.json())
+            .then((data) => {
+             
+              window.location.replace(data.url);
+            });
+        }
       });
   }
 
