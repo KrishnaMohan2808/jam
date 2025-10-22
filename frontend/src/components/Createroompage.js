@@ -14,6 +14,7 @@ import {
   Collapse,
   Alert
 } from '@mui/material';
+import { Alert as MuiAlert } from '@mui/material';
 
 class Createroompage extends Component {
   static defaultProps = {
@@ -121,10 +122,10 @@ class Createroompage extends Component {
           {/* This Collapse section will now work correctly */}
           <Collapse in={!!this.state.errorMsg || !!this.state.successMsg}>
             {this.state.successMsg && (
-              <Alert severity="success">{this.state.successMsg}</Alert>
-            )}
+              <Alert severity="success" onClose={() => this.setState({ successMsg: "" })}>{this.state.successMsg}</Alert>
+            )}  
             {this.state.errorMsg && (
-              <Alert severity="error">{this.state.errorMsg}</Alert>
+              <Alert severity="error" onClose={() => this.setState({ errorMsg: "" })}>{this.state.errorMsg}</Alert> 
             )}
           </Collapse> 
           <Typography component="h4" variant="h4">
