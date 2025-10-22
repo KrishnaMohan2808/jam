@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect # Import redirect
 from .credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from requests import post, Request
+from requests import post, Request,get
 from rest_framework import status
 import time # Import time to calculate expiry
 from .models import SpotifyToken
@@ -64,3 +64,38 @@ def spotify_callback(request):
     )
     # Redirect to your frontend after successful authentication
     return redirect('frontend:')  # Adjust the redirect URL as needed
+
+def is_spotify_authenticated(session_id):
+    token = SpotifyToken.objects.filter(user=session_id).first()
+    if token:
+        # Check if the token has expired
+        expiry_time = token.created_at + timedelta(seconds=token.expires_in)
+        if expiry_time <= timezone.now():
+            return False
+        return True
+    return False
+
+
+
+def refresh_spotify_token(session_id):
+    token = SpotifyToken.objects.filter(user=session_id).first()
+    if token:
+        refresh_token = token.refresh_token
+        response = post(SPOTIFY_TOKEN_URL, data={
+            'grant_type': 'refresh_token',
+            'refresh_token': refresh_token,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET
+        }).json()
+
+        access_token = response.get('access_token')
+        token_type = response.get('token_type')
+        expires_in = response.get('expires_in')
+
+        update_or_create_spotify_token(
+            user=session_id,
+            access_token=access_token,
+            token_type=token_type,
+            expires_in=expires_in,
+            refresh_token=refresh_token
+        ) 
