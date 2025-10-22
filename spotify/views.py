@@ -5,6 +5,10 @@ from rest_framework.response import Response
 from requests import post, Request
 from rest_framework import status
 import time # Import time to calculate expiry
+from .models import SpotifyToken
+from django.utils import timezone
+from datetime import timedelta
+from .util import update_or_create_spotify_token
 
 # Define Spotify API endpoints
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
@@ -48,24 +52,15 @@ def spotify_callback(request):
     refresh_token = response.get('refresh_token')
     error = response.get('error')
 
-    # Handle error during token exchange
-    if error:
-        return redirect('/?error=' + error) # Or an error page
-
-    # --- Store tokens in the user's session ---
-    # Ensure the session exists
     if not request.session.exists(request.session.session_key):
         request.session.create()
 
-    # Calculate the exact timestamp when the token expires
-    expires_at = time.time() + expires_in
-
-    request.session['spotify_access_token'] = access_token
-    request.session['spotify_refresh_token'] = refresh_token
-    request.session['spotify_token_expires_at'] = expires_at
-    request.session['spotify_token_type'] = token_type
-    
-    # --- Redirect user back to your frontend ---
-    # You can redirect to any page in your application (e.g., '/', '/home', '/player')
-    # This is typically the main page of your React/Vue/Angular frontend.
-    return redirect('/')
+    update_or_create_spotify_token(
+        user=request.session.session_key,
+        access_token=access_token,
+        token_type=token_type,
+        expires_in=expires_in,
+        refresh_token=refresh_token
+    )
+    # Redirect to your frontend after successful authentication
+    return redirect('frontend-url')  # Replace 'frontend-url' with your actual frontend URL
