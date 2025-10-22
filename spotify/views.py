@@ -1,16 +1,11 @@
-from django.shortcuts import render, redirect # Import redirect
+from django.shortcuts import render, redirect
 from .credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from requests import post, Request,get
+from requests import post, Request
 from rest_framework import status
-import time # Import time to calculate expiry
 from .models import SpotifyToken
-from django.utils import timezone
-from datetime import timedelta
 from .util import update_or_create_spotify_token, is_spotify_authenticated
-import json
-
 
 # Define Spotify API endpoints
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
@@ -20,12 +15,15 @@ class SpotifyAuthURL(APIView):
     def get(self, request, format=None):
         scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
         
-        # Use the correct Spotify authorization URL
+        # Get the room_code from the React fetch
+        room_code = request.GET.get('room_code')
+
         auth_url = Request('GET', SPOTIFY_AUTH_URL, params={
             'scope': scopes,
             'response_type': 'code',
             'redirect_uri': REDIRECT_URI,
-            'client_id': CLIENT_ID
+            'client_id': CLIENT_ID,
+            'state': room_code  # <-- Pass room_code as 'state'
         }).prepare().url
 
         return Response({'auth_url': auth_url}, status=status.HTTP_200_OK)
@@ -33,14 +31,19 @@ class SpotifyAuthURL(APIView):
 def spotify_callback(request):
     code = request.GET.get('code')
     error = request.GET.get('error')
+    
+    # --- THIS IS THE FIX ---
+    # Get the 'state' (which is our room_code) back from Spotify
+    room_code = request.GET.get('state')
+    # -----------------------
 
-    # Handle case where user denies access
     if error:
         # Redirect to your frontend with an error message
-        return redirect('/?error=' + error) # Or an error page
+        # We redirect to '/' because we don't know what room they were in
+        return redirect('/?error=' + error)
 
     # Exchange the code for an access token
-    response = post(SPOTIFY_TOKEN_URL, data={ # Use the correct Spotify token URL
+    response = post(SPOTIFY_TOKEN_URL, data={
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': REDIRECT_URI,
@@ -52,7 +55,13 @@ def spotify_callback(request):
     token_type = response.get('token_type')
     expires_in = response.get('expires_in') # Expiry time in seconds
     refresh_token = response.get('refresh_token')
-    error = response.get('error')
+    
+    # Handle error during token exchange
+    if not access_token:
+        if room_code:
+            return redirect(f'/room/{room_code}?error=auth_failed')
+        else:
+            return redirect('/?error=auth_failed')
 
     if not request.session.exists(request.session.session_key):
         request.session.create()
@@ -64,10 +73,21 @@ def spotify_callback(request):
         expires_in=expires_in,
         refresh_token=refresh_token
     )
-    # Redirect to your frontend after successful authentication
-    return redirect('frontend:')  # Adjust the redirect URL as needed
+
+    # --- THIS IS THE FIX ---
+    # Redirect to the room they started from, otherwise to the homepage
+    if room_code:
+        return redirect(f'/room/{room_code}')
+    else:
+        return redirect('/')
 
 class IsUserAuthenticated(APIView):
     def get(self, request, format=None):
-        is_authenticated = is_spotify_authenticated(self.request.session.session_key)
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
+            
+        session_id = request.session.session_key
+        is_authenticated = is_spotify_authenticated(session_id)
+        
+        # Wraps the boolean in a JSON Response object
         return Response({'status': is_authenticated}, status=status.HTTP_200_OK)

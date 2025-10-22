@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-// Import useNavigate and Link
-import { useParams, useNavigate, Link } from "react-router-dom"; 
+// --- CORRECTIONS: Cleaned up all duplicate/conflicting imports ---
+import { useParams, useNavigate } from "react-router-dom";
 import { Typography, Grid, Button } from "@mui/material";
-import CreateRoomPage from "./createRoomPage";
+import CreateRoomPage from "./Createroompage"; // Make sure this path and filename are correct
 
 class Room extends Component {
   constructor(props) {
@@ -17,12 +17,14 @@ class Room extends Component {
     this.roomCode = props.roomCode;
     this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
     this.getRoomDetails = this.getRoomDetails.bind(this);
-    this.getRoomDetails();
     this.showSettingsButtonPressed = this.showSettingsButtonPressed.bind(this);
     this.authenticateSpotify = this.authenticateSpotify.bind(this);
     this.renderSettings = this.renderSettings.bind(this);
     this.renderSettingsButton = this.renderSettingsButton.bind(this);
-    
+  }
+
+  componentDidMount() {
+    this.getRoomDetails();
   }
 
   getRoomDetails() {
@@ -40,7 +42,6 @@ class Room extends Component {
           votesToSkip: data.votes_to_skip,
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
-
         });
         if (data.is_host) {
           this.authenticateSpotify();
@@ -48,22 +49,25 @@ class Room extends Component {
       });
   }
 
- authenticateSpotify() {
+// Inside Room.js, in authenticateSpotify()
+
+  authenticateSpotify() {
     fetch("/spotify/is-authenticated/")
       .then((response) => response.json())
       .then((data) => {
         this.setState({ spotifyAuthenticated: data.status });
         if (!data.status) {
-          fetch("/spotify/get-auth-url/")
+          // --- THIS IS THE CHANGE ---
+          // Send the current room code to the backend
+          fetch(`/spotify/get-auth-url/?room_code=${this.roomCode}`)
+          // --------------------------
             .then((response) => response.json())
             .then((data) => {
-             
-              window.location.replace(data.url);
+              window.location.replace(data.auth_url);
             });
         }
       });
   }
-
   leaveButtonPressed() {
     const requestOptions = {
       method: "POST",
@@ -71,7 +75,7 @@ class Room extends Component {
     };
     fetch("/api/leave-room/", requestOptions).then((_response) => {
       // 👇 CALL THE CALLBACK FUNCTION FROM THE PARENT (Homepage.js)
-      this.props.clearRoomCallback(); 
+      this.props.clearRoomCallback();
       // Now navigate home
       this.props.navigate("/");
     });
@@ -82,6 +86,7 @@ class Room extends Component {
       showSettings: !this.state.showSettings,
     });
   };
+
   renderSettings() {
     return (
       <Grid container spacing={1}>
@@ -141,7 +146,7 @@ class Room extends Component {
           <Typography variant="h6" component="h6">
             Guest Can Pause: {this.state.guestCanPause.toString()}
           </Typography>
-        </Grid>
+        </Grid>T
         <Grid item xs={12} align="center">
           <Typography variant="h6" component="h6">
             Host: {this.state.isHost.toString()}
@@ -160,12 +165,14 @@ class Room extends Component {
       </Grid>
     );
   }
-}
+} // --- End of class wrapper ---
+
 // Wrapper to inject props into the class component
-export default function RoomWrapper(props) { // Accept all props
+export default function RoomWrapper(props) {
+  // Accept all props
   const { roomCode } = useParams();
-  const navigate = useNavigate(); 
-  
+  const navigate = useNavigate();
+
   // Pass all props ({...props}) and the router props down
   return (
     <Room 
