@@ -12,7 +12,7 @@ The goal of this project is to build a collaborative music-playing web app that 
 
 Django backend setup with REST API using Django REST Framework (DRF)
 
-React frontend setup with Vite or Create React App
+React frontend setup with Vite 
 
 Basic routing and frontend-backend communication
 
